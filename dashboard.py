@@ -5,10 +5,8 @@ from github import Github
 # Título da aplicação
 st.title("Atualizar DF")
 
-# Entradas de usuário para autenticação
-usuario_sql = st.text_input("Usuário SQL")
-senha_sql = st.text_input("Senha SQL", type="password")
-github_token = st.text_input("Token GitHub", type="password")
+# Entradas de usuário para autenticação do GitHub
+github_token = st.secrets["github"]["token"]
 
 # Consulta SQL
 consultaSQL = "SELECT TOP 10 Nome, RA, Projeto FROM dbo.Aluno WHERE Projeto LIKE 'Ensino Superior'"
@@ -34,36 +32,35 @@ def query_to_parquet(query, connection_name, file_name="resultado.parquet"):
 
 # Lógica para o botão "Atualizar"
 if st.button("Atualizar"):
-    if usuario_sql and senha_sql and github_token:
-        # Criar uma conexão SQL usando o nome "db_connection" definido em secrets
-        file_path = query_to_parquet(consultaSQL, "db_connection")
+    # Criar uma conexão SQL usando o nome "db_connection" definido em secrets
+    file_path = query_to_parquet(consultaSQL, "db_connection")
 
-        if file_path:
+    if file_path:
+        try:
+            # Conectar ao GitHub e ao repositório
+            g = Github(github_token)
+            repo = g.get_repo("IsmartFelipeRios/conexao_streamlit-dataBase")
+
+            # Caminho no repositório e mensagem de commit
+            repo_path = "resultado.parquet"  # Caminho do arquivo no repositório
+
+            # Ler o arquivo parquet em modo binário
+            with open(file_path, "rb") as file:
+                content = file.read()
+
+            # Cria ou atualiza o arquivo no repositório
             try:
-                # Conectar ao GitHub e ao repositório
-                g = Github(github_token)
-                repo = g.get_repo("IsmartFelipeRios/conexao_streamlit-dataBase")
+                contents = repo.get_contents(repo_path)
+                repo.update_file(contents.path, "Atualizando o arquivo parquet", content, contents.sha)
+                st.success("Arquivo atualizado com sucesso!")
+                st.balloons()
 
-                # Caminho no repositório e mensagem de commit
-                repo_path = "resultado.parquet"  # Caminho do arquivo no repositório
+            except:
+                repo.create_file(repo_path, "Criando o arquivo parquet", content)
+                st.success("Arquivo criado com sucesso!")
+                st.balloons()
 
-                # Ler o arquivo parquet em modo binário
-                with open(file_path, "rb") as file:
-                    content = file.read()
-
-                # Cria ou atualiza o arquivo no repositório
-                try:
-                    contents = repo.get_contents(repo_path)
-                    repo.update_file(contents.path, "Atualizando o arquivo parquet", content, contents.sha)
-                    st.success("Arquivo atualizado com sucesso!")
-                    st.balloons()
-
-                except:
-                    repo.create_file(repo_path, "Criando o arquivo parquet", content)
-                    st.success("Arquivo criado com sucesso!")
-                    st.balloons()
-
-            except Exception as e:
-                st.error(f"Erro ao conectar ao GitHub: {e}")
+        except Exception as e:
+            st.error(f"Erro ao conectar ao GitHub: {e}")
     else:
-        st.warning("Por favor, preencha todos os campos antes de atualizar.")
+        st.warning("Por favor, verifique se todas as configurações estão corretas.")
