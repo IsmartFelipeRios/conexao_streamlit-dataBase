@@ -14,8 +14,8 @@ github_token = st.text_input("Token GitHub", type="password")
 # Função para converter a query em um arquivo Parquet
 def query_to_parquet(query, usuario, senha, file_name="resultado.parquet"):
     try:
-        # String de conexão usando SQLAlchemy e pytds
-        connection_string = f'mssql+pytds://{usuario}:{senha}@ismart-server.database.windows.net:1433/ismart-db'
+        # String de conexão usando SQLAlchemy e pyodbc com ODBC Driver 17
+        connection_string = f'mssql+pyodbc://{usuario}:{senha}@ismart-server.database.windows.net:1433/ismart-db?driver=ODBC+Driver+17+for+SQL+Server'
         engine = create_engine(connection_string)
 
         # Executar a consulta e armazenar o resultado em um DataFrame
