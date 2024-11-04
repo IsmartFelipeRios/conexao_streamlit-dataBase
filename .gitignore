@@ -1,0 +1,7 @@
+notas.txt
+*.parquet
+
+# Arquivos do ambiente virtual
+venv/
+env/
+*.venv
