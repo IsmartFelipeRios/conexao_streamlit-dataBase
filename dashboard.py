@@ -1,16 +1,6 @@
 import streamlit as st
 import pandas as pd
 from github import Github
-import requests
-
-def obter_ip():
-    try:
-        ip = requests.get('https://api.ipify.org').text
-        st.write(f"IP do servidor: {ip}")
-    except Exception as e:
-        st.error(f"Erro ao obter o IP do servidor: {e}")
-
-obter_ip()
 
 # Título da aplicação
 st.title("Atualizar DF")
@@ -21,29 +11,38 @@ senha_sql = st.text_input("Senha SQL", type="password")
 github_token = st.text_input("Token GitHub", type="password")
 
 # Consulta SQL
-consultaSQL = "SELECT TOP 11 Nome, RA, Projeto FROM dbo.Aluno WHERE Projeto LIKE 'Ensino Superior'"
+consultaSQL = "SELECT TOP 10 Nome, RA, Projeto FROM dbo.Aluno WHERE Projeto LIKE 'Ensino Superior'"
+
+# Função para converter a query em um arquivo Parquet usando Streamlit connection
+def query_to_parquet(query, connection_name, file_name="resultado.parquet"):
+    try:
+        # Conectar ao banco de dados usando a conexão do Streamlit
+        conn = st.connection(connection_name, type="sql")
+
+        # Executar a consulta e armazenar o resultado em um DataFrame
+        df = conn.query(query)
+
+        # Salvar o DataFrame como arquivo parquet
+        df.to_parquet(file_name, index=False)
+        st.success(f"Arquivo salvo como {file_name}")
+
+        return file_name
+
+    except Exception as e:
+        st.error(f"Erro ao executar a consulta: {e}")
+        return None
 
 # Lógica para o botão "Atualizar"
 if st.button("Atualizar"):
     if usuario_sql and senha_sql and github_token:
-        try:
-            # Conectar ao banco de dados usando a conexão do Streamlit
-            conn = st.experimental_connection(
-                "db_connection",
-                type="sql",
-                url=f"mssql+pyodbc://{usuario_sql}:{senha_sql}@ismart-server.database.windows.net:1433/ismart-db?driver=ODBC+Driver+18+for+SQL+Server",
-            )
-            df = conn.query(consultaSQL)
+        # Criar uma conexão SQL usando o nome "db_connection" definido em secrets
+        file_path = query_to_parquet(consultaSQL, "db_connection")
 
-            # Salvar o DataFrame como arquivo parquet
-            file_path = "resultado.parquet"
-            df.to_parquet(file_path, index=False)
-            st.success(f"Arquivo salvo como {file_path}")
-
-            # Conectar ao GitHub e ao repositório
+        if file_path:
             try:
+                # Conectar ao GitHub e ao repositório
                 g = Github(github_token)
-                repo = g.get_repo("IsmartFelipeRios/conex-o_banco_de_dados_para_streamlit")
+                repo = g.get_repo("IsmartFelipeRios/conexao_streamlit-dataBase")
 
                 # Caminho no repositório e mensagem de commit
                 repo_path = "resultado.parquet"  # Caminho do arquivo no repositório
@@ -57,15 +56,14 @@ if st.button("Atualizar"):
                     contents = repo.get_contents(repo_path)
                     repo.update_file(contents.path, "Atualizando o arquivo parquet", content, contents.sha)
                     st.success("Arquivo atualizado com sucesso!")
-                except Exception as e:
+                    st.balloons()
+
+                except:
                     repo.create_file(repo_path, "Criando o arquivo parquet", content)
                     st.success("Arquivo criado com sucesso!")
+                    st.balloons()
 
             except Exception as e:
                 st.error(f"Erro ao conectar ao GitHub: {e}")
-
-        except Exception as e:
-            st.error(f"Erro ao executar a consulta: {e}")
-
     else:
         st.warning("Por favor, preencha todos os campos antes de atualizar.")
