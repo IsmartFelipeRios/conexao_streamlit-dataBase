@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from github import Github
+from sqlalchemy import create_engine
 
 # Título da aplicação
 st.title("Atualizar DF")
@@ -13,14 +14,17 @@ github_token = st.text_input("Token GitHub", type="password")
 # Consulta SQL
 consultaSQL = "SELECT TOP 10 Nome, RA, Projeto FROM dbo.Aluno WHERE Projeto LIKE 'Ensino Superior'"
 
-# Função para converter a query em um arquivo Parquet usando Streamlit connection
-def query_to_parquet(query, connection_name, file_name="resultado.parquet"):
+# Função para converter a query em um arquivo Parquet
+def query_to_parquet(query, usuario_sql, senha_sql, file_name="resultado.parquet"):
     try:
-        # Conectar ao banco de dados usando a conexão do Streamlit
-        conn = st.connection(connection_name, type="sql")
+        # String de conexão usando as entradas do usuário
+        connection_string = f'mssql+pyodbc://{usuario_sql}:{senha_sql}@ismart-server.database.windows.net:1433/ismart-db?driver=ODBC+Driver+18+for+SQL+Server'
 
-        # Executar a consulta e armazenar o resultado em um DataFrame
-        df = conn.query(query)
+        # Conectar ao banco de dados usando SQLAlchemy
+        engine = create_engine(connection_string)
+        with engine.connect() as conn:
+            # Executar a consulta e armazenar o resultado em um DataFrame
+            df = pd.read_sql_query(query, conn)
 
         # Salvar o DataFrame como arquivo parquet
         df.to_parquet(file_name, index=False)
@@ -35,8 +39,8 @@ def query_to_parquet(query, connection_name, file_name="resultado.parquet"):
 # Lógica para o botão "Atualizar"
 if st.button("Atualizar"):
     if usuario_sql and senha_sql and github_token:
-        # Criar uma conexão SQL usando o nome "db_connection" definido em secrets
-        file_path = query_to_parquet(consultaSQL, "db_connection")
+        # Passando o usuário e senha fornecidos como parâmetros para a função
+        file_path = query_to_parquet(consultaSQL, usuario_sql, senha_sql)
 
         if file_path:
             try:
