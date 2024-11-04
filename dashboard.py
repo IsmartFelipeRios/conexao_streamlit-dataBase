@@ -31,7 +31,7 @@ if st.button("Atualizar"):
             conn = st.experimental_connection(
                 "db_connection",
                 type="sql",
-                url=f"mssql+pyodbc://{usuario_sql}:{senha_sql}@ismart-server.database.windows.net:1433/ismart-db?driver=ODBC+Driver+17+for+SQL+Server",
+                url=f"mssql+pyodbc://{usuario_sql}:{senha_sql}@ismart-server.database.windows.net:1433/ismart-db?driver=ODBC+Driver+18+for+SQL+Server",
             )
             df = conn.query(consultaSQL)
 
