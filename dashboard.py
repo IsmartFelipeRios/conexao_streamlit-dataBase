@@ -2,7 +2,6 @@ import streamlit as st
 import pandas as pd
 from github import Github
 from sqlalchemy import create_engine
-from sqlalchemy.exc import OperationalError
 
 # Título da aplicação
 st.title("Atualizar DF")
@@ -17,7 +16,7 @@ def query_to_parquet(query, usuario, senha, file_name="resultado.parquet"):
     try:
         # String de conexão usando SQLAlchemy e pyodbc com ODBC Driver 17
         connection_string = f'mssql+pyodbc://{usuario}:{senha}@ismart-server.database.windows.net:1433/ismart-db?driver=ODBC+Driver+17+for+SQL+Server'
-        engine = create_engine(connection_string, connect_args={"timeout": 30})
+        engine = create_engine(connection_string)
 
         # Executar a consulta e armazenar o resultado em um DataFrame
         with engine.connect() as conn:
@@ -29,10 +28,6 @@ def query_to_parquet(query, usuario, senha, file_name="resultado.parquet"):
 
         return file_name
 
-    except OperationalError as e:
-        st.error("Erro ao conectar ao banco de dados. Verifique as credenciais e tente novamente.")
-        st.error(f"Detalhes do erro: {e}")
-        return None
     except Exception as e:
         st.error(f"Erro ao executar a consulta: {e}")
         return None
