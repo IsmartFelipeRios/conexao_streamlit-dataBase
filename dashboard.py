@@ -1,6 +1,20 @@
 import streamlit as st
 import pandas as pd
 from github import Github
+import requests
+
+def obter_ip():
+    try:
+        ip = requests.get('https://api.ipify.org').text
+        st.write(f"IP do servidor: {ip}")
+    except Exception as e:
+        st.error(f"Erro ao obter o IP do servidor: {e}")
+    try:
+        ip = requests.get('https://api.ipify.org').text
+        st.write(f"IP do servidor: {ip}")
+    except Exception as e:
+        st.error(f"Erro ao obter o IP do servidor: {e}")
+obter_ip()
 
 # Título da aplicação
 st.title("Atualizar DF")
@@ -21,7 +35,7 @@ if st.button("Atualizar"):
             conn = st.connection(
                 "db_connection",
                 type="sql",
-                url=f"mssql+pyodbc://{usuario_sql}:{senha_sql}@ismart-server.database.windows.net:1433/ismart-db?driver=ODBC+Driver+17+for+SQL+Server"
+                url=f"mssql+pyodbc://{usuario_sql}:{senha_sql}@ismart-server.database.windows.net:1433/ismart-db?driver=ODBC+Driver+17+for+SQL+Server",
             )
             df = conn.query(consultaSQL)
 
