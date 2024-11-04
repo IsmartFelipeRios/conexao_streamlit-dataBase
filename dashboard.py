@@ -18,7 +18,7 @@ consultaSQL = "SELECT TOP 10 Nome, RA, Projeto FROM dbo.Aluno WHERE Projeto LIKE
 def query_to_parquet(query, usuario_sql, senha_sql, file_name="resultado.parquet"):
     try:
         # String de conexão usando as entradas do usuário
-        connection_string = f'mssql+pyodbc://{usuario_sql}:{senha_sql}@ismart-server.database.windows.net:1433/ismart-db?driver=ODBC+Driver+18+for+SQL+Server'
+        connection_string = f'mssql+pyodbc://{usuario_sql}:{senha_sql}@ismart-server.database.windows.net:1433/ismart-db?driver=ODBC+Driver+17+for+SQL+Server'
 
         # Conectar ao banco de dados usando SQLAlchemy
         engine = create_engine(connection_string)
