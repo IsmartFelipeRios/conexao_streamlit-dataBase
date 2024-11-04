@@ -9,11 +9,7 @@ def obter_ip():
         st.write(f"IP do servidor: {ip}")
     except Exception as e:
         st.error(f"Erro ao obter o IP do servidor: {e}")
-    try:
-        ip = requests.get('https://api.ipify.org').text
-        st.write(f"IP do servidor: {ip}")
-    except Exception as e:
-        st.error(f"Erro ao obter o IP do servidor: {e}")
+
 obter_ip()
 
 # Título da aplicação
@@ -31,8 +27,8 @@ consultaSQL = "SELECT TOP 11 Nome, RA, Projeto FROM dbo.Aluno WHERE Projeto LIKE
 if st.button("Atualizar"):
     if usuario_sql and senha_sql and github_token:
         try:
-            # Conectar ao banco de dados usando o Streamlit SQL connection
-            conn = st.connection(
+            # Conectar ao banco de dados usando a conexão do Streamlit
+            conn = st.experimental_connection(
                 "db_connection",
                 type="sql",
                 url=f"mssql+pyodbc://{usuario_sql}:{senha_sql}@ismart-server.database.windows.net:1433/ismart-db?driver=ODBC+Driver+17+for+SQL+Server",
@@ -61,7 +57,7 @@ if st.button("Atualizar"):
                     contents = repo.get_contents(repo_path)
                     repo.update_file(contents.path, "Atualizando o arquivo parquet", content, contents.sha)
                     st.success("Arquivo atualizado com sucesso!")
-                except:
+                except Exception as e:
                     repo.create_file(repo_path, "Criando o arquivo parquet", content)
                     st.success("Arquivo criado com sucesso!")
 
