@@ -16,13 +16,13 @@ def init_connection():
         + st.secrets["password"]
     )
 
-try:
-    conn = init_connection()
-except Exception as e:
-    st.error(f'Erro ao conectar: {e}')
-
 @st.cache_data()
 def run_query(query):
+    try:
+        conn = init_connection()
+    except Exception as e:
+        st.error(f'Erro ao conectar: {e}')
+
     df = pd.read_sql_query(query, conn)
     return df
 
