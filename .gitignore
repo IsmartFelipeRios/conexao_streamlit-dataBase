@@ -5,3 +5,6 @@ notas.txt
 venv/
 env/
 *.venv
+
+#secrets.streamlit
+.streamlit\secrets.toml
