@@ -26,7 +26,8 @@ def run_query(query):
         cur.execute(query)
         return cur.fetchall()
 
-rows = run_query("SELECT * from mytable;")
+Query = st.text_input('SQL query')
+rows = run_query(Query)
 
 # Print results.
 for row in rows:
