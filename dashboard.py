@@ -3,7 +3,7 @@
 
 import streamlit as st
 import pyodbc
-import pandas as pd
+#import pandas as pd
 
 # Initialize connection.
 # Uses st.cache_resource to only run once.
@@ -30,16 +30,14 @@ def run_query(query):
         cur.execute(query)
         return cur.fetchall()
 
-rows = run_query("SELECT TOP 11 Nome, RA, Projeto FROM dbo.Aluno WHERE Projeto LIKE 'Ensino Superior'")
+rows = run_query("SELECT TOP 10 Nome, RA, Projeto FROM dbo.Aluno WHERE Projeto LIKE 'Ensino Superior'")
 
 # Print results.
 
-try:
-    df = pd.read_sql(rows, index=False)
-    st.dataframe(df)
-except:
-    for row in rows:
-        st.write(f"{row[0]} has a :{row[1]}:")
+
+
+for row in rows:
+    st.write(f"{row[0]} has a :{row[1]}:")
 
 
 ## código antigo
