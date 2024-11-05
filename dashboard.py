@@ -23,34 +23,19 @@ conn = init_connection()
 # Uses st.cache_data to only rerun when the query changes or after 10 min.
 @st.cache_data(ttl=600)
 def run_query(query):
-    with conn.cursor() as cur:
-        cur.execute(query)
-        return cur.fetchall()
+    df = pd.read_sql_query(query, conn)
+    return df
+query = st.text_input('SQL query')
 
-Query = st.text_input('SQL query')
-
-if Query:
-    rows = run_query(Query)
+if query:
+    df = run_query(query)
 
     # Print results.
     try:
-        df = pd.read_table(rows)
         st.dataframe(df)
-        st.write('Leitura com read_sql_table funcionou')
+        
     except:
         st.error('Leitura com read_sql_table não funcionou')
-    try:
-        df = pd.read_sql(rows)
-        st.dataframe(df)
-        st.write('Leitura com read_sql funcionou') 
-    except:
-        st.error('Leitura com read_sql não funcionou')
-    try:
-        df = pd.read_sql_query(rows)
-        st.dataframe(df)
-        st.write('Leitura com read_sql_query funcionou') 
-    except:
-        st.error('Leitura com read_sql_query Não funcionou')
 
 else: st.warning('Coloque a query na caixa')
 
