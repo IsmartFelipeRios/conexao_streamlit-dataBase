@@ -10,7 +10,7 @@ import pyodbc
 @st.cache_resource
 def init_connection():
     return pyodbc.connect(
-        "DRIVER={ODBC Driver 17 for SQL Server};SERVER="
+        "DRIVER={ODBC Driver 18 for SQL Server};SERVER="
         + st.secrets["server"]
         + ";DATABASE="
         + st.secrets["database"]
@@ -33,9 +33,6 @@ def run_query(query):
 rows = run_query("SELECT TOP 10 Nome, RA, Projeto FROM dbo.Aluno WHERE Projeto LIKE 'Ensino Superior'")
 
 # Print results.
-
-
-
 for row in rows:
     st.write(f"{row[0]} has a :{row[1]}:")
 
