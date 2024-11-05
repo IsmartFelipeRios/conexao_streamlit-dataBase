@@ -33,8 +33,13 @@ def run_query(query):
 rows = run_query("SELECT TOP 11 Nome, RA, Projeto FROM dbo.Aluno WHERE Projeto LIKE 'Ensino Superior'")
 
 # Print results.
-df = pd.read_sql(rows, index=False)
-st.dataframe(df)
+
+try:
+    df = pd.read_sql(rows, index=False)
+    st.dataframe(df)
+except:
+    for row in rows:
+        st.write(f"{row[0]} has a :{row[1]}:")
 
 
 ## código antigo
