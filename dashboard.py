@@ -27,9 +27,14 @@ def run_query(query):
         return cur.fetchall()
 
 Query = st.text_input('SQL query')
-rows = run_query(Query)
 
-# Print results.
-for row in rows:
-    st.write(f"{row[0]} has a :{row[1]}:")
+if Query:
+    rows = run_query(Query)
+
+    # Print results.
+    for row in rows:
+        st.write(f"{row[0]} has a :{row[1]}:")
+else: st.warning('Coloque a query na caixa')
+
+
     
