@@ -2,8 +2,7 @@ import streamlit as st
 import pyodbc
 import pandas as pd
 
-# Initialize connection.
-# Uses st.cache_resource to only run once.
+
 @st.cache_resource
 def init_connection():
     return pyodbc.connect(
@@ -17,25 +16,26 @@ def init_connection():
         + st.secrets["password"]
     )
 
-conn = init_connection()
+try:
+    conn = init_connection()
+except Exception as e:
+    st.error(f'Erro ao conectar: {e}')
 
-# Perform query.
-# Uses st.cache_data to only rerun when the query changes or after 10 min.
-@st.cache_data(ttl=600)
+@st.cache_data()
 def run_query(query):
     df = pd.read_sql_query(query, conn)
     return df
+
 query = st.text_input('SQL query')
 
 if query:
-    df = run_query(query)
-
-    # Print results.
     try:
-        st.dataframe(df)
-        
-    except:
-        st.error('Leitura com read_sql_table não funcionou')
+        df = run_query(query)
+    except Exception as e:
+        st.error(f'Erro com a query: {e}')
+    
+    # Print results.
+    st.dataframe(df)
 
 else: st.warning('Coloque a query na caixa')
 
