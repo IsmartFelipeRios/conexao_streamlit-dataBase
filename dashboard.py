@@ -25,8 +25,8 @@ def make_df(query):
 
         df = pd.read_sql_query(query, conn)
         return df
-    run_query(query)
-    
+    return run_query(query)
+
 query = st.text_input('SQL query')
 
 if query:
