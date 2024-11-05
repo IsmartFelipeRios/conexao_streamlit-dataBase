@@ -39,5 +39,5 @@ if query:
 
 else: st.warning('Coloque a query na caixa')
 
-
+st.button("rerun")
     
