@@ -41,4 +41,5 @@ if query:
 else: st.warning('Coloque a query na caixa')
 
 st.button("rerun")
-st.button("Clean Cach",st.cache_resource.clear())
+if st.button("Clean Cach",):
+    st.cache_resource.clear()
