@@ -16,12 +16,7 @@ def init_connection():
         + st.secrets["password"]
     )
 
-<<<<<<< HEAD
 conn = init_connection()
-=======
-# Entradas de usuário para autenticação do GitHub
-github_token = st.secrets["github"]["token"]
->>>>>>> 6ea405102b0f779d98c406984f8696b4182ab6a8
 
 # Perform query.
 # Uses st.cache_data to only rerun when the query changes or after 10 min.
@@ -36,16 +31,6 @@ rows = run_query("SELECT TOP 11 Nome, RA, Projeto FROM dbo.Aluno WHERE Projeto L
 # Print results.
 for row in rows:
     st.write(f"{row[0]} has a :{row[1]}:")
-
-
-
-
-<<<<<<< HEAD
-
-
-
-
-
 
 
 # import streamlit as st
@@ -124,39 +109,3 @@ for row in rows:
 # # Lógica para o botão "Atualizar"
 # if st.button("Atualizar"):
 #     upload_github()
-=======
-# Lógica para o botão "Atualizar"
-if st.button("Atualizar"):
-    # Criar uma conexão SQL usando o nome "db_connection" definido em secrets
-    file_path = query_to_parquet(consultaSQL, "db_connection")
-
-    if file_path:
-        try:
-            # Conectar ao GitHub e ao repositório
-            g = Github(github_token)
-            repo = g.get_repo("IsmartFelipeRios/conexao_streamlit-dataBase")
-
-            # Caminho no repositório e mensagem de commit
-            repo_path = "resultado.parquet"  # Caminho do arquivo no repositório
-
-            # Ler o arquivo parquet em modo binário
-            with open(file_path, "rb") as file:
-                content = file.read()
-
-            # Cria ou atualiza o arquivo no repositório
-            try:
-                contents = repo.get_contents(repo_path)
-                repo.update_file(contents.path, "Atualizando o arquivo parquet", content, contents.sha)
-                st.success("Arquivo atualizado com sucesso!")
-                st.balloons()
-
-            except:
-                repo.create_file(repo_path, "Criando o arquivo parquet", content)
-                st.success("Arquivo criado com sucesso!")
-                st.balloons()
-
-        except Exception as e:
-            st.error(f"Erro ao conectar ao GitHub: {e}")
-    else:
-        st.warning("Por favor, verifique se todas as configurações estão corretas.")
->>>>>>> 6ea405102b0f779d98c406984f8696b4182ab6a8
