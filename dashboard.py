@@ -34,7 +34,7 @@ if Query:
 
     # Print results.
     try:
-        df = pd.read_sql_table(rows)
+        df = pd.read_table(rows)
         st.dataframe(df)
         st.write('Leitura com read_sql_table funcionou')
     except:
@@ -50,7 +50,7 @@ if Query:
         st.dataframe(df)
         st.write('Leitura com read_sql_query funcionou') 
     except:
-        st.write('Leitura com read_sql_query Não funcionou')
+        st.error('Leitura com read_sql_query Não funcionou')
 
 else: st.warning('Coloque a query na caixa')
 
