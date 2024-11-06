@@ -3,7 +3,7 @@ import pyodbc
 import pandas as pd
 
 def make_df(query):
-    @st.cache_resource(ttl=86400)
+    @st.cache_resource(ttl=1400)
     def init_connection():
         return pyodbc.connect(
             "DRIVER={ODBC Driver 17 for SQL Server};SERVER="
@@ -16,7 +16,7 @@ def make_df(query):
             + st.secrets["password"]
         )
 
-    @st.cache_data(ttl=86400)
+    @st.cache_data(ttl=1400, max_entries=2)
     def run_query(query):
         try:
             conn = init_connection()
