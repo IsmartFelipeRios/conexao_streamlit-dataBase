@@ -26,8 +26,16 @@ def make_df(query, cache_duration_seconds=14400, Entries_max=1000):
             df = pd.read_sql_query(query, conn)
         except Exception as e:
             st.error(f'Erro com a query: {e}')
-            choice = st.radio("Escolha uma opção:", ["Não", "Sim"])
-            if choice == "Sim":
+            # Verifica se a chave "choice" já está no estado da sessão, caso contrário a inicializa
+            if "choice" not in st.session_state:
+                st.session_state.choice = None
+
+            # Cria os dois botões "Sim" e "Não"
+            if st.button("Não"):
+                st.session_state.choice = "Não"
+
+            if st.button("Sim"):
+                st.session_state.choice = "Sim"
                 st.cache_data.clear()
                 st.cache_resource.clear()
                 st.success("All cache cleared!")
