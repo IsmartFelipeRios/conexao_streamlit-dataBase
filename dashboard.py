@@ -1,6 +1,7 @@
 import streamlit as st
 import pyodbc
 import pandas as pd
+from time import sleep
 
 def make_df(query, cache_duration_seconds=14400, Entries_max=1000):
     @st.cache_resource(ttl=cache_duration_seconds, max_entries=Entries_max)
@@ -26,19 +27,18 @@ def make_df(query, cache_duration_seconds=14400, Entries_max=1000):
             df = pd.read_sql_query(query, conn)
         except Exception as e:
             st.error(f'Erro com a query: {e}')
-            # Verifica se a chave "choice" já está no estado da sessão, caso contrário a inicializa
-            if "choice" not in st.session_state:
-                st.session_state.choice = None
-
+            st.write("Deseja limpar o cache e recarregar?")
             # Cria os dois botões "Sim" e "Não"
+            st.container()
             if st.button("Não"):
-                st.session_state.choice = "Não"
-
+                st.rerun()
             if st.button("Sim"):
                 st.session_state.choice = "Sim"
                 st.cache_data.clear()
                 st.cache_resource.clear()
                 st.success("All cache cleared!")
+                sleep(2)
+                st.rerun()
         return df
     return run_query(query)
 
@@ -48,7 +48,8 @@ if query:
     df = make_df(query)
     
     # Print results.
-    st.dataframe(df)
+    if df:
+        st.dataframe(df)
 
 else: st.warning('Coloque a query na caixa')
 
