@@ -22,18 +22,22 @@ def make_df(query, cache_duration_seconds=14400, Entries_max=1000):
             conn = init_connection()
         except Exception as e:
             st.error(f'Erro ao conectar: {e}')
-
-        df = pd.read_sql_query(query, conn)
+        try:
+            df = pd.read_sql_query(query, conn)
+        except Exception as e:
+            st.error(f'Erro com a query: {e}')
+            choice = st.radio("Escolha uma opção:", ["Não", "Sim"])
+            if choice == "Sim":
+                st.cache_data.clear()
+                st.cache_resource.clear()
+                st.success("All cache cleared!")
         return df
     return run_query(query)
 
 query = st.text_input('SQL query')
 
 if query:
-    try:
-        df = make_df(query)
-    except Exception as e:
-        st.error(f'Erro com a query: {e}')
+    df = make_df(query)
     
     # Print results.
     st.dataframe(df)
