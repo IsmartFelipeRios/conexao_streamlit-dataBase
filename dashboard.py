@@ -16,7 +16,7 @@ def make_df(query, cache_duration_seconds=14400, Entries_max=1000):
             + st.secrets["password"]
         )
 
-    @st.cache_data(ttl=cache_duration_seconds, max_entries=Entries_max)
+    @st.cache_data(ttl=cache_duration_seconds, max_entries=Entries_max, experimental_allow_widgets=True)
     def run_query(query):
         try:
             conn = init_connection()
