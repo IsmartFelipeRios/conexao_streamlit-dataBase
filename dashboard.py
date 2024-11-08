@@ -1,7 +1,6 @@
 import streamlit as st
 import pyodbc
 import pandas as pd
-from time import sleep
 
 def make_df(query, cache_duration_seconds=14400, Entries_max=1000):
     @st.cache_resource(ttl=cache_duration_seconds, max_entries=Entries_max)
@@ -37,7 +36,6 @@ def make_df(query, cache_duration_seconds=14400, Entries_max=1000):
                 st.cache_data.clear()
                 st.cache_resource.clear()
                 st.success("All cache cleared!")
-                sleep(2)
                 st.rerun()
         return df
     return run_query(query)
