@@ -2,8 +2,8 @@ import streamlit as st
 import pyodbc
 import pandas as pd
 
-def make_df(query):
-    @st.cache_resource(ttl=1400)
+def make_df(query, cache_duration_seconds=14400, Entries_max=1000):
+    @st.cache_resource(ttl=cache_duration_seconds, max_entries=Entries_max)
     def init_connection():
         return pyodbc.connect(
             "DRIVER={ODBC Driver 17 for SQL Server};SERVER="
@@ -16,7 +16,7 @@ def make_df(query):
             + st.secrets["password"]
         )
 
-    @st.cache_data(ttl=1400, max_entries=2)
+    @st.cache_data(ttl=cache_duration_seconds, max_entries=Entries_max)
     def run_query(query):
         try:
             conn = init_connection()
