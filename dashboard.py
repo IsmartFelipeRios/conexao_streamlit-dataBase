@@ -48,8 +48,7 @@ if query:
     df = make_df(query)
     
     # Print results.
-    if df:
-        st.dataframe(df)
+    st.dataframe(df)
 
 else: st.warning('Coloque a query na caixa')
 
