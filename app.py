@@ -27,8 +27,6 @@ def make_df(query, cache_duration_seconds=14400, Entries_max=1000):
         except Exception as e:
             st.error(f'Erro com a query: {e}')
             st.write("Deseja limpar o cache e recarregar?")
-            # Cria os dois botões "Sim" e "Não"
-            st.container()
             if st.button("Sim"):
                 st.cache_data.clear()
                 st.cache_resource.clear()
