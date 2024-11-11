@@ -2,6 +2,7 @@ notas.txt
 *.parquet
 conexao_github.py
 tentando_conexao.py
+
 # Arquivos do ambiente virtual
 venv/
 env/
