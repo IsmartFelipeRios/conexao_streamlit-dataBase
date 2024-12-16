@@ -6,16 +6,13 @@ def make_df(query, cache_duration_seconds=14400, Entries_max=1000):
     @st.cache_resource(ttl=cache_duration_seconds, max_entries=Entries_max)
     def init_connection():
         return pyodbc.connect(
-            "DRIVER={ODBC Driver 17 for SQL Server};SERVER="
-            + st.secrets["server"]
-            + ";DATABASE="
-            + st.secrets["database"]
-            + ";Authentication=ActiveDirectoryAccessToken"
-            + ";UID="
-            + st.secrets['AZURE_CLIENT_ID']@st.secrets['AZURE_TENANT_ID']
-            + ";PWD="
-            + st.secrets['AZURE_CLIENT_SECRET']
-        )
+                "DRIVER={ODBC Driver 17 for SQL Server};"
+                f"SERVER={st.secrets['server']};"
+                f"DATABASE={st.secrets['database']};"
+                "Authentication=ActiveDirectoryServicePrincipal;"
+                f"UID={st.secrets['AZURE_CLIENT_ID']}@{st.secrets['AZURE_TENANT_ID']};"
+                f"PWD={st.secrets['AZURE_CLIENT_SECRET']}"
+                )
 
     @st.cache_data(ttl=cache_duration_seconds, max_entries=Entries_max, experimental_allow_widgets=True)
     def run_query(query):
