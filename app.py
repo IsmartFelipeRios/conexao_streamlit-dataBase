@@ -10,10 +10,11 @@ def make_df(query, cache_duration_seconds=14400, Entries_max=1000):
             + st.secrets["server"]
             + ";DATABASE="
             + st.secrets["database"]
+            + ";Authentication=ActiveDirectoryAccessToken"
             + ";UID="
-            + st.secrets["username"]
+            + st.secrets['AZURE_CLIENT_ID']@st.secrets['AZURE_TENANT_ID']
             + ";PWD="
-            + st.secrets["password"]
+            + st.secrets['AZURE_CLIENT_SECRET']
         )
 
     @st.cache_data(ttl=cache_duration_seconds, max_entries=Entries_max, experimental_allow_widgets=True)
