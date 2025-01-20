@@ -69,11 +69,7 @@ def make_df(query, cache_duration_seconds=14400, Entries_max=1000):
             attrs_before={1256: access_token.encode("utf-16-le")},
         )
 
-    @st.cache_data(
-        ttl=cache_duration_seconds,
-        max_entries=Entries_max,
-        experimental_allow_widgets=True,
-    )
+    @st.cache_data(ttl=cache_duration_seconds,max_entries=Entries_max,experimental_allow_widgets=True,)
     def run_query(query):
 
         try:
@@ -107,3 +103,6 @@ def make_df(query, cache_duration_seconds=14400, Entries_max=1000):
         return df
 
     return run_query(query)
+
+query = st.text_input(label='Query')
+make_df(query)
