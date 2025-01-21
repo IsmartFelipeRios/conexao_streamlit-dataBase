@@ -64,7 +64,7 @@ def make_df(query, cache_duration_seconds=14400, Entries_max=1000):
         return pyodbc.connect(
             "DRIVER={ODBC Driver 18 for SQL Server};"
             f"SERVER={st.secrets['SQL_SERVER_NAME']};"
-            f"DATABASE={st.secrets['RESOURCE_GROUP_NAME ']};"
+            f"DATABASE={st.secrets['RESOURCE_GROUP_NAME']};"
             "Trusted_Connection=No;",
             attrs_before={1256: access_token.encode("utf-16-le")},
         )
