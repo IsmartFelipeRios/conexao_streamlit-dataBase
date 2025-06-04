@@ -62,7 +62,7 @@ def make_df(query, cache_duration_seconds=14400, Entries_max=1000):
         update_firewall()
 
         return pyodbc.connect(
-            "DRIVER={ODBC Driver 18 for SQL Server};"
+            "DRIVER={ODBC Driver 17 for SQL Server};"
             f"SERVER={st.secrets['SQL_SERVER_NAME']};"
             f"DATABASE={st.secrets['RESOURCE_GROUP_NAME']};"
             "Trusted_Connection=No;",
