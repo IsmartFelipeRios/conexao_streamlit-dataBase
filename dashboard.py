@@ -65,19 +65,19 @@ def update_firewall(cred):
         return False
 
 @st.cache_resource(ttl=3600)
-def init_connection(cred):
+def init_connection(_cred): # <-- MUDANÇA AQUI
     """Inicializa a conexão com o banco de dados. Fica em cache por 1 hora."""
-    if not cred:
+    if not _cred: # <-- MUDANÇA AQUI
         st.error("Credencial do Azure não está disponível. Conexão abortada.")
         return None
 
     # 1. Atualiza o firewall
-    if not update_firewall(cred):
+    if not update_firewall(_cred): # <-- MUDANÇA AQUI
         st.warning("A atualização do firewall falhou. A conexão pode não funcionar se o IP não estiver permitido.")
-
+    
     # 2. Obtém o token de acesso para o banco de dados
     try:
-        token_credential = cred.get_token("https://database.windows.net/.default")
+        token_credential = _cred.get_token("https://database.windows.net/.default") # <-- MUDANÇA AQUI
         access_token = token_credential.token
     except Exception as e:
         st.error(f"Erro ao obter token de acesso: {e}")
@@ -91,7 +91,7 @@ def init_connection(cred):
             f"DATABASE={st.secrets['SQL_DATABASE_NAME']};"
             "LoginTimeout=30;"
         )
-
+        
         conn = pyodbc.connect(
             conn_str,
             attrs_before={1256: bytes(access_token, "utf-16-le")}
@@ -129,4 +129,3 @@ if st.button("Executar Query"):
                 st.dataframe(result_df)
     else:
         st.warning("Por favor, digite uma query.")
-        
