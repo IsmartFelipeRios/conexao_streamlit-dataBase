@@ -64,37 +64,43 @@ def update_firewall(cred):
         st.error(f"Erro ao atualizar regra de firewall: {e}")
         return False
 
-# Substitua sua função init_connection por esta versão de TESTE
 @st.cache_resource(ttl=3600)
-def init_connection(_cred): # Mantemos _cred para não quebrar a chamada, mas não o usamos
-    """TENTA CONECTAR USANDO USUÁRIO E SENHA SQL PARA TESTE."""
+def init_connection(_cred): # <-- MUDANÇA AQUI
+    """Inicializa a conexão com o banco de dados. Fica em cache por 1 hora."""
+    if not _cred: # <-- MUDANÇA AQUI
+        st.error("Credencial do Azure não está disponível. Conexão abortada.")
+        return None
 
-    # A atualização do firewall ainda é necessária e usa o Service Principal
-    if not update_firewall(_cred):
-        st.warning("A atualização do firewall falhou. A conexão pode não funcionar.")
-
+    # 1. Atualiza o firewall
+    if not update_firewall(_cred): # <-- MUDANÇA AQUI
+        st.warning("A atualização do firewall falhou. A conexão pode não funcionar se o IP não estiver permitido.")
+    
+    # 2. Obtém o token de acesso para o banco de dados
     try:
-        # Nova string de conexão, usando UID (User ID) e PWD (Password)
+        token_credential = _cred.get_token("https://database.windows.net/.default") # <-- MUDANÇA AQUI
+        access_token = token_credential.token
+    except Exception as e:
+        st.error(f"Erro ao obter token de acesso: {e}")
+        return None
+
+    # 3. Conecta-se ao banco de dados
+    try:
         conn_str = (
             "DRIVER={ODBC Driver 17 for SQL Server};"
             f"SERVER={st.secrets['SQL_SERVER_NAME']}.database.windows.net;"
             f"DATABASE={st.secrets['SQL_DATABASE_NAME']};"
-            f"UID={st.secrets['SQL_TEST_USER']};"
-            f"PWD={st.secrets['SQL_TEST_PASSWORD']};"
             "LoginTimeout=30;"
         )
         
-        # Conexão direta, sem o 'attrs_before' do token
-        conn = pyodbc.connect(conn_str)
-        
-        # Se chegar aqui, a conexão funcionou!
-        st.success("SUCESSO! A conexão com usuário e senha SQL funcionou!")
+        conn = pyodbc.connect(
+            conn_str,
+            attrs_before={1256: bytes(access_token, "utf-16-le")}
+        )
         return conn
-
     except Exception as e:
-        st.error(f"Erro no teste de conexão com usuário/senha: {e}")
+        st.error(f"Erro ao conectar com pyodbc: {e}")
         return None
-    
+
 @st.cache_data(ttl=600)
 def run_query(query: str):
     """Executa uma query e retorna um DataFrame. Fica em cache por 10 minutos."""
