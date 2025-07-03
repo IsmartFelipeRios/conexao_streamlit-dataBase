@@ -67,7 +67,7 @@ Antes de tudo, vamos preparar seu ambiente local e conectar com os segredos do A
 Agora que tudo está configurado, vamos rodar a aplicação pela primeira vez.
 
 ```bash
-streamlit run app.py
+streamlit run dashboard.py
 ```
 
 A aplicação irá carregar, mas ao tentar executar uma query, você deve encontrar um erro nos logs do Streamlit parecido com este:
